@@ -1,2 +1,2 @@
-# bi-cluster-editing
-Algorithms for bi-cluster editing. 
+# biclustpy
+Python library for bi-clustering. 
