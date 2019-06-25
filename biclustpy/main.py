@@ -3,8 +3,7 @@ from . import ilp
 
 class Algorithm:
     
-    """
-    Class to select algorithm for solving the subproblems.
+    """Class to select algorithm for solving the subproblems.
     
     Attributes:
         algorithm_name (string): Name of selected algorithm. Must be either \"ILP\", \"FP\", or \"EDGE-DEL\". Default = \"ILP\".
@@ -18,8 +17,7 @@ class Algorithm:
         self.ilp_tune = False
             
     def run(self, weights, threshold, subgraph):
-        """
-        Runs the selected algorithm on a given subgraph.
+        """Runs the selected algorithm on a given subgraph.
         
         Args:
             weights (numpy.array): The overall problem instance.
@@ -42,8 +40,11 @@ class Algorithm:
     
     
 def compute_bi_clusters(weights, threshold, algorithm):
-    """
-    Computes bi-clusters. First decomposed the instance into connected components and then calls user-specified algorithm so solve the subproblems.
+    """Computes bi-clusters. 
+    
+    The function first decomposed the instance into connected components and 
+    checks whether they are already bi-cliques. Subsequently, it calls a 
+    user-specified algorithm to solve the remaining subproblems.
     
     Args:
         weights (numpy.array): The problem instance.

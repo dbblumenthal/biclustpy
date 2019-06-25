@@ -1,8 +1,7 @@
 import networkx as nx
 
 def col_to_node(col, num_rows):
-    """
-    Returns node ID of a column in the instance.
+    """Returns node ID of a column in the instance.
     
     Args:
         col (int): The column ID.
@@ -14,8 +13,7 @@ def col_to_node(col, num_rows):
     return num_rows + col
 
 def node_to_col(node, num_rows):
-    """
-    Returns column ID of a node in the intance's graph representation that represents a column.
+    """Returns column ID of a node in the intance's graph representation that represents a column.
     
     Args:
         node (int): The node ID of the column in the graph representation.
@@ -27,8 +25,7 @@ def node_to_col(node, num_rows):
     return node - num_rows
 
 def is_row(node, num_rows):
-    """
-    Checks if a node in the graph representation of the instance is a row.
+    """Checks if a node in the graph representation of the instance is a row.
     
     Args:
         node (int): The node ID in the graph representation.
@@ -40,8 +37,7 @@ def is_row(node, num_rows):
     return node < num_rows
 
 def is_col(node, num_rows):
-    """
-    Checks if a node in the graph representation of the instance is a column.
+    """Checks if a node in the graph representation of the instance is a column.
     
     Args:
         node (int): The node ID in the graph representation.
@@ -53,8 +49,7 @@ def is_col(node, num_rows):
     return node >= num_rows
     
 def build_graph_from_weights(weights, threshold, nodes):
-    """
-    Builds NetworkX graph for given weights, threshold, and subset of nodes.
+    """Builds NetworkX graph for given weights, threshold, and subset of nodes.
     
     Args:
         weights (numpy.array): The overall problem instance.
@@ -78,8 +73,7 @@ def build_graph_from_weights(weights, threshold, nodes):
     return graph
 
 def connected_components(graph):
-    """
-    Decomposes graph into connected components.
+    """Decomposes graph into connected components.
     
     Args:
         graph (networkx.Graph): Graph that should be decomposed.
@@ -102,8 +96,7 @@ def connected_components(graph):
     return components
     
 def is_bi_clique(graph, num_rows):
-    """
-    Checks if a bipartite graph is a bi-clique.
+    """Checks if a bipartite graph is a bi-clique.
     
     Args:
         graph (networkx.Graph): Bipartite graph.
