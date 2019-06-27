@@ -48,13 +48,13 @@ def is_col(node, num_rows):
     """
     return node >= num_rows
     
-def build_graph_from_weights(weights, threshold, nodes):
+def build_graph_from_weights(weights, nodes):
     """Builds NetworkX graph for given weights, threshold, and subset of nodes.
     
     Args:
         weights (numpy.array): The overall problem instance.
-        threshold (float): Edges whose weights are below the threshold are absent.
-        nodes (list of int): The set of nodes for which the graph should be build. Must be a subset of range(weights.shape[0] + weights.shape[1]).
+        nodes (list of int): The set of nodes for which the graph should be build. 
+            Must be a subset of range(weights.shape[0] + weights.shape[1]).
     
     Returns:
         networkx.Graph: The induced subgraph in the specified set of nodes.
@@ -68,7 +68,7 @@ def build_graph_from_weights(weights, threshold, nodes):
         for col in nodes:
             if is_row(col, num_rows):
                 continue
-            if weights[row, node_to_col(col, num_rows)] >= threshold:
+            if weights[row, node_to_col(col, num_rows)] >= 0:
                 graph.add_edge(row, col)
     return graph
 
@@ -100,7 +100,8 @@ def is_bi_clique(graph, num_rows):
     
     Args:
         graph (networkx.Graph): Bipartite graph.
-        num_rows (int): The number of nodes in the original instance. Nodes are in the left partition of graph if and only if their ID is smaller than num_rows.
+        num_rows (int): The number of nodes in the original instance. 
+            Nodes are in the left partition of graph if and only if their ID is smaller than num_rows.
     
     Returns:
          bool: True if and only if the graph is a bi-clique.
@@ -113,3 +114,6 @@ def is_bi_clique(graph, num_rows):
         else:
             size_right = size_right + 1
     return graph.number_of_edges() == size_left * size_right
+    
+def is_singleton(bi_cluster):
+    return (len(bi_cluster[0]) == 0) or (len(bi_cluster[1]) == 0)

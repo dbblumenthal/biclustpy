@@ -1,16 +1,18 @@
-import numpy as np
 import gurobipy as gp
 import networkx as nx
 from progress.bar import Bar
-from scipy.special import binom
 from . import helpers
 
-def run(weights, threshold, subgraph, time_limit, tune):
-    """Calls Gurobi to solve bi-cluster editing problems.
+def run(weights, subgraph, time_limit, tune):
+    """Calls Gurobi to solve ILP formulation of the bi-cluster editing problem.
+    
+    Implements the ILP suggested in: 
+    G. F. de Sousa Filho, T. L. B. Junior, L. dos Anjos F. Cabral, L. S. Ochi, and F. Protti:
+    New heuristics for the bicluster editing problem. Annals OR 258(2), pp. 781-814, 2017,
+    https://doi.org/10.1007/s10479-016-2261-x.
     
     Args:
-        weights (numpy.array): The problem instance.
-        threshold (float): Edges whose weights are below the threshold are absent.
+        weights (numpy.array): The overall problem instance.
         subgraph (networkx.Graph): The subgraph that should be rendered bi-transitive.
         time_limit (float): Time limit in seconds. If negative, no time limit is enforced.
         tune (bool): If True, the model is tuned before optimization.
@@ -33,50 +35,32 @@ def run(weights, threshold, subgraph, time_limit, tune):
         model.Params.TimeLimit = time_limit
         model.Params.TuneTimeLimit = time_limit
     
-    # Get dimension of the problem instance.
+    # Get rows and columns of the sub-problem.
     num_rows = weights.shape[0]
-    num_cols = weights.shape[1]
     rows = [node for node in subgraph.nodes if helpers.is_row(node, num_rows)]
     cols = [helpers.node_to_col(node, num_rows) for node in subgraph.nodes if helpers.is_col(node, num_rows)]
-    n = len(rows)
-    m = len(cols)
     
     # Add one binary decision variable x[(i,k)] for each possible edge (i,k) and set objective function.
-    constant = sum([weights[i,k] - threshold for i in rows for k in cols if weights[i,k] >= threshold])
-    cost_matrix = (threshold * np.ones((num_rows, num_cols))) - weights
     x = {}
-    bar = Bar("Adding edge variables.      ", max = n * m)
+    bar = Bar("Adding variables.  ", max = len(rows) * len(cols))
+    constant = 0
     for i in rows:
         for k in cols:
-            x[(i,k)] = model.addVar(lb = 0.0, ub = 1.0, obj = cost_matrix[i,k], vtype = gp.GRB.BINARY)
+            x[(i,k)] = model.addVar(lb = 0.0, ub = 1.0, obj = weights[i,k], vtype = gp.GRB.BINARY)
+            x[(i,k)].setAttr(gp.GRB.Attr.Start, 1.0)
+            if weights[i,k] < 0:
+                constant = constant - weights[i,k]
             bar.next()
     bar.finish()
     
-    # Add one axiliary binary variable y[((i,j),(k,l))] for each subgraph {i,j}x{k,l} of size 4. 
-    # If y[((i,j),(k,l))] = 0, the subgraph is a bi-clique. Otherwise it contains at most 2 edges.
-    size_4_subgraphs = []
-    y = {}
-    bar = Bar("Adding subgraph variables.  ", max = binom(n, 2) * binom(m, 2))
-    for pos_i in range(n):
-        i = rows[pos_i]
-        for pos_j in range(pos_i + 1, n):
-            j = rows[pos_j]
-            for pos_k in range(m):
-                k = cols[pos_k]
-                for pos_l in range(pos_k + 1, m):
-                    l = cols[pos_l]
-                    size_4_subgraphs.append(((i,j),(k,l)))
-                    y[((i,j),(k,l))] = model.addVar(lb = 0.0, ub = 1.0, obj = 0.0, vtype = gp.GRB.BINARY)
+    # Add contsraints to rule out induced P4s in the solution.
+    bar = Bar("Adding constraints.", max = len(rows) * len(rows) * len(cols) * len(cols))
+    for i in rows:
+        for j in rows:
+            for k in cols:
+                for l in cols:
+                    new_constr = model.addConstr(x[(i,k)] - x[(i,l)] - x[(j,k)] - x[(j,l)] <= 0)
                     bar.next()
-    bar.finish()
-    
-    # Add constraints that forbid P4 subgraphs.
-    big_m = 4
-    bar = Bar("Adding subgraph constraints.", max = binom(n, 2) * binom(m, 2))
-    for ((i,j),(k,l)) in size_4_subgraphs:
-        new_constr = model.addConstr(x[(i,k)] + x[(i,l)] + x[(j,k)] + x[(j,l)] + big_m * y[((i,j),(k,l))] >= 4)
-        new_constr = model.addConstr(x[(i,k)] + x[(i,l)] + x[(j,k)] + x[(j,l)] + big_m * y[((i,j),(k,l))] <= 2 + big_m)
-        bar.next()
     bar.finish()
         
     # Solve the model.
@@ -87,11 +71,11 @@ def run(weights, threshold, subgraph, time_limit, tune):
     print("Solving the model ...")
     model.optimize()
     
-    # Compute the adjacency matrix from the solved model.
+    # Construct the bi-transitive subgraph from the solved model.
     bi_transitive_subgraph = nx.Graph()
     bi_transitive_subgraph.add_nodes_from(subgraph.nodes)
     for (i,k) in x:
-        if x[(i,k)].getAttr(gp.GRB.Attr.X) > 0.0:
+        if x[(i,k)].getAttr(gp.GRB.Attr.X) == 0.0:
             bi_transitive_subgraph.add_edge(i, helpers.col_to_node(k, num_rows))
     
     # Return the solution.
