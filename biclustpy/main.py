@@ -49,10 +49,10 @@ class Algorithm:
 def compute_bi_clusters(weights, algorithm):
     """Computes bi-clusters using bi-cluster editing.
     
-    Given a matrix W = (w[i][k]) of weights of dimentsion n x m with positive and negative 
+    Given a matrix W = (w[i][k]) of weights of dimension n x m with positive and negative 
     entries, the bi-cluster editing problem asks to transform the bipartite graph
     ([n], [m], E) into a collection of disjoint bi-cliques by adding or deleting edges:
-        - The edge set E contains all (i,k) with w[i][k] >= 0.
+        - The edge set E contains all (i,k) with w[i][k] > 0.
         - Adding an edge induces the cost -w[i][k].
         - Deleting an edge induces the cost w[i][k].
         - The overall induced cost should be minimized.

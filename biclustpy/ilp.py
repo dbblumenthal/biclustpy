@@ -51,7 +51,7 @@ def run(weights, subgraph, time_limit, tune):
         for k in cols:
             x[(i,k)] = model.addVar(lb = 0.0, ub = 1.0, obj = weights[i,k], vtype = gp.GRB.BINARY)
             x[(i,k)].setAttr(gp.GRB.Attr.Start, start)
-            if weights[i,k] < 0:
+            if weights[i,k] <= 0:
                 constant = constant - weights[i,k]
             bar.next()
     bar.finish()

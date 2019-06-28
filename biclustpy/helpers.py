@@ -68,7 +68,7 @@ def build_graph_from_weights(weights, nodes):
         for col in nodes:
             if is_row(col, num_rows):
                 continue
-            if weights[row, node_to_col(col, num_rows)] >= 0:
+            if weights[row, node_to_col(col, num_rows)] > 0:
                 graph.add_edge(row, col)
     return graph
 
