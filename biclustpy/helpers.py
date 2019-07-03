@@ -1,5 +1,41 @@
 import networkx as nx
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
+def prettify(elem):
+    """Returns a pretty-printed XML string for the ElementTree element.
+    
+    Args:
+        elem (xml.etree.ElementTree.Element): The element that should be prettified.
+    
+    Returns:
+        string: A pretty-printed XML string for the element.
+    """
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="\t")
+    
+def build_element_tree(bi_clusters, obj_val, is_optimal, instance):
+    root = ET.Element("bi_clusters")
+    root.set("num_bi_clusters", str(len(bi_clusters)))
+    root.set("num_rows", str(sum([len(bi_cluster[0]) for bi_cluster in bi_clusters])))
+    root.set("num_cols", str(sum([len(bi_cluster[1]) for bi_cluster in bi_clusters])))
+    root.set("obj_val", str(obj_val))
+    root.set("is_opt", str(is_optimal))
+    root.set("instance", instance)
+    cluster_id = 0
+    for bi_cluster in bi_clusters:
+        child = ET.SubElement(root, "bi_cluster")
+        child.set("id", "_" + str(cluster_id))
+        child.set("num_rows", str(len(bi_cluster[0])))
+        child.set("num_cols", str(len(bi_cluster[1])))
+        rows = ET.SubElement(child, "rows")
+        rows.text = " ".join([str(row) for row in bi_cluster[0]])
+        columns = ET.SubElement(child, "cols")
+        columns.text = " ".join([str(col) for col in bi_cluster[1]])
+        cluster_id = cluster_id + 1
+    return root
+    
 def col_to_node(col, num_rows):
     """Returns node ID of a column in the instance.
     

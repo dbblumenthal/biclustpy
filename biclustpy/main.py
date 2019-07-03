@@ -151,3 +151,20 @@ def compute_bi_clusters(weights, algorithm):
     # Return the obtained bi-transitive subgraph, the objective value of the obtained solution, 
     # and a flag that indicates if the solution is guaranteed to be optimal.
     return bi_clusters, obj_val, is_optimal 
+    
+def save_bi_clusters_as_xml(filename, bi_clusters, obj_val, is_optimal, instance = ""):
+    """Saves bi-clusters as XML file.
+    
+    Args:
+        filename (string): Name of XML file.
+        bi_clusters (list of tuple of list of int): List of computed bi-clusters.
+            The first element of each bi-cluster is the list of rows, the second the list of columns.
+        obj_val (float): Objective value of the obtained solution.
+        is_optimal (bool): Set to True if and only if the obtained solution is guaranteed to be optimal.
+        instance (string): String that contains information about the problem instance.
+    """
+    elem_tree = helpers.build_element_tree(bi_clusters, obj_val, is_optimal, instance)
+    xml_file = open(filename, "w")
+    xml_file.write(helpers.prettify(elem_tree))
+    xml_file.close()
+    
