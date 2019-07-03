@@ -68,7 +68,6 @@ def compute_bi_clusters(weights, algorithm):
     Returns:
         list of tuple of list of int: List of computed bi-clusters. 
             The first element of each bi-cluster is the list of rows, the second the list of columns.
-            Only non-singleton clusters are returned.
         float: Objective value of the obtained solution.
         bool: True if and only if the obtained solution is guaranteed to be optimal.
     """
@@ -96,8 +95,7 @@ def compute_bi_clusters(weights, algorithm):
                     bi_cluster[0].append(node)
                 else:
                     bi_cluster[1].append(helpers.node_to_col(node, num_rows))
-            if not helpers.is_singleton(bi_cluster):
-                bi_clusters.append(bi_cluster)
+            bi_clusters.append(bi_cluster)
         else:
             subgraphs.append(component)
             
@@ -106,7 +104,7 @@ def compute_bi_clusters(weights, algorithm):
     print("Finished pre-processing.")
     print("------------------------------------------------------------------------------")
     print("Number of connected components: " + str(len(components)))
-    print("Number of bi-cliques: " + str(len(components) - len(subgraphs)))
+    print("Number of bi-cliques: " + str(len(bi_clusters)))
     print("==============================================================================")
     
     # Solve the subproblems and construct the final bi-clusters. 
@@ -138,8 +136,7 @@ def compute_bi_clusters(weights, algorithm):
                     bi_cluster[0].append(node)
                 else:
                     bi_cluster[1].append(helpers.node_to_col(node, num_rows))
-            if not helpers.is_singleton(bi_cluster):
-                bi_clusters.append(bi_cluster)
+            bi_clusters.append(bi_cluster)
         print("==============================================================================")
     
     print("\n==============================================================================")
@@ -147,7 +144,7 @@ def compute_bi_clusters(weights, algorithm):
     print("------------------------------------------------------------------------------")
     print("Objective value: " + str(obj_val))
     print("Is optimal: " + str(is_optimal))
-    print("Number of non-singleton bi-clusters: " + str(len(bi_clusters)))
+    print("Number of bi-clusters: " + str(len(bi_clusters)))
     print("==============================================================================")
     
     

@@ -1,2 +1,2 @@
 # biclustpy
-Python library for bi-clustering. 
+Python library for bi-cluster editing. 
