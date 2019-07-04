@@ -6,7 +6,7 @@ def readme():
         return f.read()
         
 setup(name='biclustpy',
-      version='0.1',
+      version='0.2',
       description='bi-cluster editing library',
       long_description=readme(),
       long_description_content_type='text/markdown',
