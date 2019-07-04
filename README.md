@@ -41,7 +41,7 @@ After installation, `import biclustpy as bp` into your Python application. Then 
 import numpy as np
 import biclustpy as bp
 
-algorithm = bp.Algorithm
+algorithm = bp.Algorithm()
 algorithm.algorith_name = "ILP"
 algorithm.ilp_time_limit = 100
 algorithm.ilp_tune = True
