@@ -8,7 +8,7 @@ class Algorithm:
     
     Attributes:
         algorithm_name (string): Name of selected algorithm. 
-            Options: \"ILP\", \"FPT\", \"EDH\", \"CH\". 
+            Options: \"ILP\", \"CH\". 
             Default: \"ILP\".
         ilp_time_limit (float): Time limit for algorithm \"ILP\" in seconds. 
             If <= 0, no time limit is enforced. 
@@ -36,14 +36,10 @@ class Algorithm:
         """
         if self.algorithm_name == "ILP":
             return ilp.run(weights, subgraph, self.ilp_time_limit, self.ilp_tune)
-        elif self.algorithm_name == "FPT":
-            raise Exception("The algorithm FPT has not been implemented yet.") 
-        elif self.algorithm_name == "EDH":
-            raise Exception("The algorithm EDH has not been implemented yet.")
         elif self.algorithm_name == "CH":
             return ch.run(weights, subgraph)
         else:
-            raise Exception("Invalid algorithm name \"" + self.algorithm_name + "\". Options: \"ILP\", \"FPT\", \"EDH\", \"CH\".")
+            raise Exception("Invalid algorithm name \"" + self.algorithm_name + "\". Options: \"ILP\", \"CH\".")
     
     
 def compute_bi_clusters(weights, algorithm):
@@ -57,7 +53,7 @@ def compute_bi_clusters(weights, algorithm):
         - Deleting an edge induces the cost w[i][k].
         - The overall induced cost should be minimized.
     
-    The function first decomposed the instance into connected components and 
+    The function first decomposes the instance into connected components and 
     checks whether they are already bi-cliques. Subsequently, it calls a 
     user-specified algorithm to solve the remaining subproblems.
     

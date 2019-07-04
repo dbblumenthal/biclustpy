@@ -9,10 +9,11 @@ setup(name='biclustpy',
       version='0.1',
       description='bi-cluster editing library',
       long_description=readme(),
+      long_description_content_type='text/markdown',
       keywords='bi-cluster editing',
       url='http://github.com/dbblumenthal/biclustpy',
       author='David B. Blumenthal',
-      author_email='david.blumenthal@inf.unibz.it',
+      author_email='david.blumenthal@wzw.tum.de',
       license='LGPL',
       packages=['biclustpy'],
       install_requires=[
@@ -23,7 +24,7 @@ setup(name='biclustpy',
           'gurobipy'
       ],
       entry_points={
-          'console_scripts': ['run-biclustpy=biclustpy.command_line:main'],
+          'console_scripts': ['biclustpy=biclustpy.command_line:main'],
       },
       include_package_data=True,
       zip_safe=False)
