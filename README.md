@@ -19,12 +19,9 @@ A Python library for bi-cluster editing.
 After installation, `import biclustpy as bp` into your Python application. Then use it as follows: 
 
 - `bp.Algorithm`: Use this class to select the algorithm you want to employ.
-  - `bp.Algorithm.algorithm_name`: String you can use to select the algorithm you want to employ. Default: `"ILP"`.
-     - Set to `"ILP"` if you want to use Gurobi to solve the ILP formulation suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
-     - Set to `"CH"` if you want to use the constructive heuristic suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
-     - More algorithms are following soon.
-   - `bp.Algorithm.ilp_time_limit`: Integer that specifies a time limit in seconds for the optimization and the tuning phase of the algorithm `"ILP"`. Default: `60`.
-   - `bp.Algorithm.ilp_tune`: Boolean flag that indicates whether or not `"ILP"` should be tuned before being optimized. Default: `False`.  
+  - `bp.Algorithm.use_ilp(time_limit, tune)`: Call this function if you want to use Gurobi to solve the ILP formulation suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
+   - `bp.Algorithm.use_ch()`: Call this function if you want to use the constructive heuristic suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
+   - More algorithms are following soon.
 - `bp.compute_bi_clusters(weights, algorithm)`: Use this function  to solve a bi-cluster editing problem.
   -  `weights`: The problem instance given as a `numpy.array`. 
   -  `algorithm`: The selected algorithm given as a `bp.Algorithm` object.
@@ -42,9 +39,9 @@ import numpy as np
 import biclustpy as bp
 
 algorithm = bp.Algorithm()
-algorithm.algorith_name = "ILP"
-algorithm.ilp_time_limit = 100
-algorithm.ilp_tune = True
+time_limit = 100
+tune = True
+algorithm.use_ilp(100, True)
 
 n = 30
 m = 40
