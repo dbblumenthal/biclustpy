@@ -20,7 +20,7 @@ After installation, `import biclustpy as bp` into your Python application. Then 
 
 - `bp.Algorithm`: Use this class to select the algorithm you want to employ.
   - `bp.Algorithm.use_ilp(time_limit, tune)`: Call this function if you want to use Gurobi to solve the ILP formulation suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
-   - `bp.Algorithm.use_ch()`: Call this function if you want to use the constructive heuristic suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
+   - `bp.Algorithm.use_ch(alpha, seed)`: Call this function if you want to use the constructive heuristic suggested in [G. F. de Sousa Filho et al (2017): New heuristics for the bicluster editing problem](https://doi.org/10.1007/s10479-016-2261-x).
    - More algorithms are following soon.
 - `bp.compute_bi_clusters(weights, algorithm)`: Use this function  to solve a bi-cluster editing problem.
   -  `weights`: The problem instance given as a `numpy.array`. 

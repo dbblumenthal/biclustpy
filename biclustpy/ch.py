@@ -1,9 +1,36 @@
 import networkx as nx
-import numpy as np
 from progress.bar import Bar
 from . import helpers
+import numpy as np
+import random
 
-def run(weights, subgraph):
+def get_next_pair(queue, is_deleted, alpha, seed):
+    # If alpha = 1, the pair (i,k) is determined deterministically.
+    if (alpha == 1):
+        for ((i,k), g) in queue:
+            if not (is_deleted[i] or is_deleted[k]):
+                return (i, k)
+    # Otherwise, (i,k) is selected randomly.
+    g_max = -np.infty
+    g_min = np.infty
+    for ((i,k), g) in queue:
+        if is_deleted[i] or is_deleted[k]:
+            continue
+        g_max = max(g_max, g)
+        g_min = min(g_min, g)
+    threshold = g_min + alpha * (g_max - g_min)
+    candidates = []
+    for ((i,k), g) in queue:
+        if is_deleted[i] or is_deleted[k]:
+            continue
+        if g >= threshold:
+            candidates.append((i,k))
+    random.seed(seed)
+    return random.choice(candidates)
+            
+        
+
+def run(weights, subgraph, alpha, seed):
     """Suboptimally solves the bi-cluster editing problem via a constructive heuristic.
     
     Implements the heuristic CH suggested in: 
@@ -14,6 +41,8 @@ def run(weights, subgraph):
     Args:
         weights (numpy.array): The overall problem instance.
         subgraph (networkx.Graph): The subgraph that should be rendered bi-transitive.
+        alpha (float): Between 0 and 1. If smaller than 1, the algorithm behaves non-deterministically.
+        seed (None or int): Seed for random generation.
     
     Returns:
         networkx.Graph: The obtained bi-transitive graph.
@@ -47,20 +76,17 @@ def run(weights, subgraph):
     bar.finish()
           
     # Sort the queue of all pairs of nodes in decrasing order w.r.t. their g-values.
-    queue.sort(key = lambda t: t[1], reverse = True)
+    if alpha == 1:
+        queue.sort(key = lambda t: t[1], reverse = True)
     
     # Construct the bi-transitive subgraph.
     print("Constructing the bi-transitive subgraph ...")  
     bi_transitive_subgraph = nx.Graph()
     shrinking_subgraph = nx.Graph(subgraph)
     is_deleted = {node : False for node in shrinking_subgraph.nodes}
-    pos = 0
     while len(shrinking_subgraph.edges) > 0:
         # Find the pair (i,k) of undeleted nodes that maximizes the g-value.
-        while is_deleted[queue[pos][0][0]] or is_deleted[queue[pos][0][1]]:
-            pos = pos + 1
-        i = queue[pos][0][0]
-        k = queue[pos][0][1]
+        (i, k) = get_next_pair(queue, is_deleted, alpha, seed)
         # Set the bi-cluster to the union of neighborhoods of i and k.
         bi_cluster_left = set(shrinking_subgraph.adj[k])
         bi_cluster_left.add(i)
@@ -76,8 +102,7 @@ def run(weights, subgraph):
             is_deleted[node] = True
         for node in bi_cluster_right:
             is_deleted[node] = True
-        pos = pos + 1
-    # Add isolated nodes to teh bi-transitive subgraph.
+    # Add isolated nodes to the bi-transitive subgraph.
     bi_transitive_subgraph.add_nodes_from(shrinking_subgraph.nodes)
     
     # Compute the objective value of the constructed solution.

@@ -62,7 +62,7 @@ def run(weights, subgraph, time_limit, tune):
         for j in rows:
             for k in cols:
                 for l in cols:
-                    new_constr = model.addConstr(x[(i,k)] - x[(i,l)] - x[(j,k)] - x[(j,l)] <= 0)
+                    model.addConstr(x[(i,k)] - x[(i,l)] - x[(j,k)] - x[(j,l)] <= 0)
                     bar.next()
     bar.finish()
         
